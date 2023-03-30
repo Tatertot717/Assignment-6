@@ -8,4 +8,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="initialInvestmentUSD.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="initialInvestmentUSD.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
