@@ -7,31 +7,97 @@ namespace Assignment_6
         static void Main(string[] args)
         {
             //Console.WriteLine(Directory.GetCurrentDirectory());
+            //Console.WriteLine(getPersonFromFile("omar", "initialInvestmentUSD.txt"));
+            //Console.WriteLine(getPersonFromFile("omar", "clientBC.txt"));
+            //buyBitCoin(getDollarPrice(getData()));
+            //getCurrentValue(getDollarPrice(getData()));
+            while (true)
+            {
+                Console.WriteLine("One BitCoin is currently worth $" + getDollarPrice(getData()) + "\n\r1.Buy Bitcoin\n\r2.See everyones current value in USD\n\r3.See one persons gain / loss\n\r4.Quit");
 
-            buyBitCoin(getDollarPrice(getData()));
-            getCurrentValue(getDollarPrice(getData()));
-
+                try
+                {
+                    int choice = Convert.ToInt32(Console.ReadLine());
+                    switch (choice)
+                    {
+                        default:
+                            throw new FormatException();
+                        case 1:
+                            buyBitCoin(getDollarPrice(getData()));
+                            break;
+                        case 2:
+                            getCurrentValue(getDollarPrice(getData()));
+                            break;
+                        case 3:
+                            Console.WriteLine("Enter a name");
+                            string person = Console.ReadLine().Trim().ToLower();
+                            Console.WriteLine();
+                            double ii = getPersonFromFile(person, "initialInvestmentUSD.txt");
+                            double bc = getPersonFromFile(person, "clientBC.txt");
+                            if (ii == -1 || bc == -1)
+                            {
+                                break;
+                            }
+                            double curval = bc * getDollarPrice(getData());
+                            Console.WriteLine("Original Investment: " + ii);
+                            Console.WriteLine("Number of Bitcoin: " + bc);
+                            Console.WriteLine("Current value: " + curval);
+                            Console.WriteLine("Change in value: " + (curval - ii));
+                            break;
+                        case 4:
+                            System.Environment.Exit(0);
+                            break;
+                    }
+                }
+                catch (FormatException) { Console.WriteLine("Not a valid choice"); }
+            }
         }
-
+        public static double getPersonFromFile(string nquery, string fquery)
+        {
+            try
+            {
+                StreamReader sr = new(fquery);
+                string line = "";
+                while (!sr.EndOfStream)
+                {
+                    line = sr.ReadLine();
+                    string[] data = line.Split(':');
+                    if ((data[0].ToLower().Trim()).Equals(nquery.ToLower()))
+                    {
+                        return (Convert.ToDouble(data[1]));
+                    }
+                }
+                throw new PersonNotFound();
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return -1;
+            }
+            catch (PersonNotFound ex)
+            {
+                Console.WriteLine(ex.Message);
+                return -1;
+            }
+        }
         public class PersonNotFound : Exception
         {
             public override string Message
             {
-                get {
+                get
+                {
                     return ("Person does not exist");
                 }
             }
-             
         }
-        
-        public static void getCurrentValue(double curval) 
+        public static void getCurrentValue(double curval)
         {
-            try 
+            try
             {
                 StreamReader sr = new("clientBC.txt");
                 string line = "";
-                while (!sr.EndOfStream) 
-                { 
+                while (!sr.EndOfStream)
+                {
                     line = sr.ReadLine();
                     string[] bc = line.Split(':');
                     bc[1] = ((Convert.ToDouble(bc[1])) * curval).ToString();
@@ -39,7 +105,7 @@ namespace Assignment_6
 
                 }
             }
-            catch(IOException ex) { Console.WriteLine(ex.Message); }
+            catch (IOException ex) { Console.WriteLine(ex.Message); }
         }
         public static void buyBitCoin(float price)
         {
@@ -62,11 +128,11 @@ namespace Assignment_6
             {
                 Console.WriteLine(ex.ToString());
             }
-            finally {
-                if(sw != null) sw.Close();
+            finally
+            {
+                if (sw != null) sw.Close();
             }
         }
-        
         public static List<string> getData()
         {
             List<string> list = new List<string>();
@@ -95,11 +161,8 @@ namespace Assignment_6
             {
                 Console.WriteLine(ex.ToString());
             }
-
             return (list);
-
         }
-
         public static float getDollarPrice(List<string> lines)
         {
             bool header = true;
